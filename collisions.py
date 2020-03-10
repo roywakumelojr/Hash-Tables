@@ -18,7 +18,7 @@ def how_many_before_collision(buckets, loops=1):
             hash_index = hash(random_key) % buckets
             if hash_index not in tried:
                 tried.add(hash_index)
-                tries += 1
+                tries += i
 
             else:
                 # We have found a collision
