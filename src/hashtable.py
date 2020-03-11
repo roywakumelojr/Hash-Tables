@@ -51,13 +51,31 @@ class HashTable:
 
         Fill this in.
         '''
-        # Finding the index
-        index = self._hash_mod(key)
+        # # Finding the index
+        # index = self._hash_mod(key)
 
-        # Printing out a warning then the information is getting overwritten
+        # # Printing out a warning then the information is getting overwritten
+        # if self.storage[index] is not None:
+        #     print('Warning: The information is getting overwritten')
+        # self.storage[index] = LinkedPair(key, value)
+
+        ##### Day 2 Code #####
+        index = self._hash_mod(key)
+        new_index = LinkedPair(key, value)
+
         if self.storage[index] is not None:
-            print('Warning: The information is getting overwritten')
-        self.storage[index] = LinkedPair(key, value)
+            if self.storage[index].key == key:
+                self.storage[index] = new_index
+                return 
+            current_index = self.storage[index] 
+            while current_index.next is not None:
+                if current_index.key == key:
+                    current_index = new_index
+                    break
+                current_index = current_index.next 
+            current_index.next = new_index
+        else:
+            self.storage[index] = new_index
 
     def remove(self, key):
         '''
@@ -67,17 +85,32 @@ class HashTable:
 
         Fill this in.
         '''
-        # Finding the index.
+        # # Finding the index.
+        # index = self._hash_mod(key)
+
+        # # Print a warning if the index is None.
+        # if self.storage[index] is None:
+        #     print('Warning: No information was found')
+        #     return
+
+        # # Reassign the location of the item being removed to None.
+        # self.storage[index] = None
+
+        ##### Day 2 Code #####
         index = self._hash_mod(key)
 
-        # Print a warning if the index is None.
-        if self.storage[index] is None:
+        if self.storage[index] is not None:
+            if self.storage[index].key == key:
+                self.storage[index] = None 
+                return 
+            else: 
+                while self.storage[index].key is not key and self.storage[index] is not None:
+                    self.storage[index] = self.storage[index].next
+                self.storage[index] = None 
+                return
+        else:
             print('Warning: No information was found')
             return
-
-        # Reassign the location of the item being removed to None.
-        self.storage[index] = None
-
 
     def retrieve(self, key):
         '''
@@ -87,18 +120,33 @@ class HashTable:
 
         Fill this in.
         '''
-        # Finding the index.
+        # # Finding the index.
+        # index = self._hash_mod(key)
+
+        # # Returns the stored value.
+        # if self.storage[index] is not None:
+        #     if self.storage[index].key == key:
+        #         return self.storage[index].value
+        #     else:
+        #         print('warning: The key does not match')
+        #         return None
+        # else:
+        #     return None
+
+        ##### Day 2 Code #####
         index = self._hash_mod(key)
 
-        # Returns the stored value.
         if self.storage[index] is not None:
             if self.storage[index].key == key:
                 return self.storage[index].value
             else:
-                print('warning: The key does not match')
-                return None
+                current_node = self.storage[index]
+                while current_node.key is not key and current_node is not None:
+                    current_node = current_node.next 
+                return current_node.value
         else:
             return None
+
 
     def resize(self):
         '''
@@ -107,16 +155,29 @@ class HashTable:
 
         Fill this in.
         '''
+        # self.capacity *= 2
+        # new_storage = [None] * self.capacity
+
+        # for content in self.storage:
+        #     if content is not None:
+        #         new_index = self._hash_mod(content.key)
+        #         new_storage[new_index] = LinkedPair(content.key, content.value)
+        # self.storage = new_storage
+
+        ##### Day 2 Code #####
         self.capacity *= 2
-        new_storage = [None] * self.capacity
+        self.storage = [None] * self.capacity
+        new_storage = self.storage
 
-        for content in self.storage:
-            if content is not None:
-                new_index = self._hash_mod(content.key)
-                new_storage[new_index] = LinkedPair(content.key, content.value)
-        self.storage = new_storage
-
-
+        for content in new_storage:
+            if content is None:
+                pass
+            elif content.next is None: 
+                self.insert(content.key, content.value)
+            else:
+                while content is not None:
+                    self.insert(content.key, content.value)
+                    content = content.next
 
 if __name__ == "__main__":
     ht = HashTable(2)
